@@ -1,8 +1,7 @@
 """
 Helix Core Cell v2 - Strict Unitary Isometry
-Ported from ROUND UITNeuronCell with Helix naming.
 
-Key addition over helix.py:
+Extends the base helix.py architecture with:
 - Hard Renormalization ("Diamond Lock") — phases snap to nearest
   topological grid point, creating bit-perfect crystalline state
 - Zero-Persistence mode for continuous topology tracking

@@ -1,15 +1,15 @@
 """
 Helix Phase Synthesis
-Ported from ROUND Synthesis/ module.
 
 Decodes/generates from phase state back to the original embedding space.
-This fills the core gap: Helix could only encode. Now it can also decode.
+This fills the missing decode path: Helix encodes into phase geometry
+and this module inverts that operation.
 
 Implements:
 - PhaseDecoder: maps phase angles back to embedding space
 - CrystalSynthesizer: generates from a MemoryCrystal's phase state
-- PhasicRelay: proves cross-instance communication (the Relay/Sandwich test)
-  Two independently trained instances can communicate through phase state
+- PhasicRelay: proves cross-instance communication
+  Two independently initialized instances can communicate through phase state
   without ever being trained together — Phasic Sovereignty.
 """
 
@@ -140,7 +140,7 @@ class PhasicRelay:
     never been trained together can communicate through the shared phase
     geometry — Phasic Sovereignty.
 
-    ROUND calls this the "Phasic Sandwich":
+    The relay path:
     Encoder -> phase state -> Decoder, with zero erasure cost.
 
     In Helix terms:

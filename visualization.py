@@ -1,6 +1,5 @@
 """
 Helix Scientific Visualization Suite
-Ported from ROUND visualization_utils.py with ROUND's 3-panel dark mode standard.
 
 Provides standardized 3-panel diagnostic plots for all Helix benchmarks:
   Panel A: Persistence Map   — heatmap of crystallization over training
@@ -20,7 +19,7 @@ import matplotlib.colors as mcolors
 from matplotlib.gridspec import GridSpec
 
 
-# Dark mode palette (ROUND "Forest Wall" standard)
+# Dark mode palette (Helix "Forest Wall" standard)
 DARK_BG    = "#0A0B10"
 COLOR_HIT  = "forestgreen"
 COLOR_MISS = "maroon"

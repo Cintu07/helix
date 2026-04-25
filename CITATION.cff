@@ -1,0 +1,77 @@
+cff-version: 1.2.0
+message: "If you use Helix in your research, please cite it as below."
+type: software
+title: "Helix: Harmonic Encoding with Lossless Infinite conteXt"
+abstract: >
+  Helix is a neural memory architecture that stores information as rotation
+  angles on a geometric manifold rather than decaying floating-point numbers.
+  The core insight is that rotation is a unitary (magnitude-preserving)
+  operation, unlike the contractive multiplication used in GRUs and LSTMs.
+  This enables theoretically infinite lossless memory in a single neuron.
+  Built on top of Helix is a Crystal Suite — eleven production-ready modules
+  for portable, encrypted, federated, and multi-modal AI memory that is
+  fully model-agnostic (any LLM can read any crystal without retraining).
+authors:
+  - family-names: Kalyan
+    given-names: Pavan
+    alias: Cintu07
+    email: ""
+    affiliation: "Lexideck Technologies"
+repository-code: "https://github.com/Cintu07/helix"
+license: "BUSL-1.1"
+version: "2.1.0"
+date-released: "2026-04-25"
+keywords:
+  - neural-architecture
+  - memory
+  - phase-rotation
+  - unitary-isometry
+  - lossless-compression
+  - model-agnostic
+  - ai-infrastructure
+  - persistent-memory
+  - phase-geometry
+  - harmonic-encoding
+references:
+  - type: article
+    title: "Unitary Evolution Recurrent Neural Networks"
+    authors:
+      - family-names: Arjovsky
+        given-names: Martin
+      - family-names: Shah
+        given-names: Amar
+      - family-names: Bengio
+        given-names: Yoshua
+    year: 2016
+    url: "https://arxiv.org/abs/1511.06464"
+    notes: "Foundational work on unitary recurrent networks that preserve information via unitary transformations."
+  - type: article
+    title: "On the difficulty of training recurrent neural networks"
+    authors:
+      - family-names: Pascanu
+        given-names: Razvan
+      - family-names: Mikolov
+        given-names: Tomas
+      - family-names: Bengio
+        given-names: Yoshua
+    year: 2013
+    url: "https://arxiv.org/abs/1211.5063"
+    notes: "The vanishing and exploding gradient problem that Helix solves by replacing multiplication with rotation."
+  - type: article
+    title: "Expressive power of recurrent neural networks"
+    authors:
+      - family-names: Chen
+        given-names: Minshuo
+      - family-names: Liu
+        given-names: Bohang
+    year: 2018
+    url: "https://arxiv.org/abs/1711.00811"
+    notes: "Theoretical bounds on RNN expressiveness that motivate the phase-angle encoding approach."
+  - type: article
+    title: "Landauer's Principle"
+    authors:
+      - family-names: Landauer
+        given-names: Rolf
+    year: 1961
+    journal: "IBM Journal of Research and Development"
+    notes: "The physical principle that information erasure has a thermodynamic cost, motivating Helix's reversible computation design."

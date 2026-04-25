@@ -1,13 +1,9 @@
 """
 Helix Cross-Instance Relay Benchmark
-Ported from ROUND Sandwich Duel / Phasic Sandwich test.
 
 Tests Phasic Sovereignty: two independently initialized Helix instances
 that were never trained together can relay information through phase state
 with zero erasure cost.
-
-ROUND result: UIT-ROUND 100% vs GRU 0.4% success rate.
-This benchmark verifies the same for Helix.
 
 Why this matters:
 - Vector architectures (GRU, LSTM) build private internal languages during training.
@@ -74,9 +70,9 @@ def run_relay_benchmark(
     encoder = HelixEncoderModel(
         input_size=input_size,
         hidden_size=hidden_size,
-        output_size=hidden_size,  # outputs phase-space representation
+        output_size=input_size,   # output must match input_size for identity relay
         harmonics=HARMONICS_STANDARD,
-        persistence=0.0  # pure stateless encoding
+        persistence=0.0
     )
     enc_opt = torch.optim.Adam(encoder.parameters(), lr=lr)
 
@@ -85,8 +81,9 @@ def run_relay_benchmark(
         enc_opt.zero_grad()
         seq = identities.unsqueeze(0)  # (1, num_identities, input_size)
         output, conf = encoder(seq)
-        # Train encoder to produce distinct, stable outputs
-        loss = -conf  # maximize confidence (harmonic alignment)
+        # Train encoder: reconstruct the final identity from the phase state
+        target = identities[-1].unsqueeze(0)  # (1, input_size)
+        loss = nn.functional.mse_loss(output, target)
         loss.backward()
         enc_opt.step()
         enc_losses.append(loss.item())

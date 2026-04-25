@@ -1,12 +1,9 @@
 """
 Helix Layered Resonance Benchmark
-Ported from ROUND Prism Stack test.
 
 Tests whether Helix can use one piece of information to change how it
-interprets another — multi-step conditional logic via stacked geometric rotations.
-
-ROUND result: solved via physical adjustment of internal focus on the
-information circle (stacked phase rotations).
+interprets another — multi-step conditional logic via stacked geometric
+rotations.
 
 This benchmark validates:
 1. Helix can encode conditional context (IF this THEN read that differently)

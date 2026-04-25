@@ -3,7 +3,7 @@ Parity Benchmark: Helix (1 neuron) vs GRU (128 neurons) on 16-bit parity.
 16-bit parity requires remembering every single input bit perfectly.
 No approximation works. GRU cant do it. Helix can.
 
-Training protocol matches ROUND v1.3.14 exactly:
+Training protocol:
 - BCEWithLogitsLoss (binary output, not CrossEntropy)
 - Custom phi-gate weight init (primes neuron to rotate pi per 1-bit)
 - Confidence-scaled loss
@@ -28,7 +28,7 @@ TC = PARITY_CONFIG
 
 def generate_parity_data(n, seq_len=16):
     X = torch.randint(0, 2, (n, seq_len, 1)).float()
-    Y = (X.sum(1) % 2).float()   # ROUND uses BCEWithLogitsLoss: target shape [n, 1]
+    Y = (X.sum(1) % 2).float()   # BCEWithLogitsLoss: target shape [n, 1]
     return X.to(DEVICE), Y.to(DEVICE)
 
 
@@ -43,20 +43,20 @@ class GRUBaseline(nn.Module):
 
 
 def build_helix_parity():
-    """Build HelixModel matching ROUND's parity setup exactly."""
+    """Build HelixModel for parity task."""
     model = HelixModel(
         input_size=1,
-        hidden_size=1,          # 1 neuron — matches ROUND hidden_r=1
+        hidden_size=1,          # 1 neuron
         output_size=1,          # binary output via BCE
         num_layers=1,
-        harmonics=[1],          # single harmonic — matches ROUND
+        harmonics=[1],          # single harmonic (harmonic monism)
         use_spinor=True,        # 2x multiplier (spinor geometry)
         quantization_strength=TC['PEAK_LOCKING_STRENGTH'],
         persistence=1.0,
         full_state=False,
     ).to(DEVICE)
 
-    # Override readout: hidden*3 -> 32 -> 1   (matches ROUND's robust readout)
+    # Override readout: hidden*3 -> 32 -> 1
     model.readout = nn.Sequential(
         nn.Linear(1 * 3, 32),
         nn.Tanh(),
@@ -84,7 +84,7 @@ def train_helix(epochs=None):
     Xt, Yt = generate_parity_data(1000)
 
     for e in range(epochs):
-        # Gaussian annealing — matches ROUND exactly
+        # Gaussian annealing on quantization strength
         qs = get_lock_strength(e, epochs, TC['PEAK_LOCKING_STRENGTH'], TC['FLOOR'])
         for cell in model.layers:
             cell.quantization_strength = qs
@@ -141,7 +141,7 @@ def train_gru(epochs=None):
 
 def main():
     print("=" * 52)
-    print("HELIX PARITY BENCHMARK (ROUND-equivalent protocol)")
+    print("HELIX PARITY BENCHMARK")
     print("1 helix neuron vs 128 GRU neurons | 16-bit parity")
     print("=" * 52, flush=True)
 

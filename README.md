@@ -80,7 +80,7 @@ helix wins decisively on lossless recall tasks (parity, crystalline loop) becaus
 
 the claim isnt "helix beats gru everywhere." the claim is "helix is the only architecture that achieves perfect lossless recall, and it does it with orders of magnitude fewer parameters."
 
-## advanced training features (ported from ROUND)
+## advanced training features
 
 `advanced_features.py` contains three training protocols discovered during 3 years of research:
 

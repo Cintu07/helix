@@ -14,8 +14,6 @@ access" tradeoff completely.
 
 import torch
 import numpy as np
-import struct
-import hashlib
 
 
 class TemporalPhaseIndex:
@@ -42,14 +40,17 @@ class TemporalPhaseIndex:
         matches = tpi.search(query_phi, top_k=5)
     """
     
-    def __init__(self, hidden_size, snapshot_interval=10, max_snapshots=10000):
+    def __init__(self, hidden_size, snapshot_interval=10, max_snapshots=10000, circular=False):
         self.hidden_size = hidden_size
         self.snapshot_interval = snapshot_interval
         self.max_snapshots = max_snapshots
+        # circular=False when used with full_state=True crystals (phase on real line,
+        # not wrapped to [0, 2pi]). circular=True for standard wrapped phase.
         
         # Timeline storage: step -> phase state
+        self.circular = circular
         self.timeline = {}
-        self.step_index = []  # Sorted list of recorded steps
+        self.step_index = []
         self.total_steps = 0
         
     def record(self, step, phi_state):
@@ -115,18 +116,18 @@ class TemporalPhaseIndex:
         if after is None:
             return self.timeline[before].clone()
         
-        # Linear interpolation on the phase angles
         t = (step - before) / (after - before)
         phi_before = self.timeline[before]
         phi_after = self.timeline[after]
-        
-        # Use circular interpolation (slerp on angles)
         diff = phi_after - phi_before
-        # Wrap to [-pi, pi] for proper interpolation
-        diff = torch.remainder(diff + np.pi, 2 * np.pi) - np.pi
-        interpolated = phi_before + t * diff
-        
-        return interpolated
+
+        if self.circular:
+            # Shortest arc on the circle — only valid when phase is wrapped to [0, 2pi]
+            diff = torch.remainder(diff + np.pi, 2 * np.pi) - np.pi
+
+        # When circular=False (full_state=True crystals), phase lives on the real
+        # line so linear interpolation is correct — no wrapping needed.
+        return phi_before + t * diff
     
     def recall_features_at(self, step, harmonics=[1, 2, 4, 8]):
         """

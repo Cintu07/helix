@@ -15,12 +15,7 @@ Implements:
 
 import torch
 import torch.nn as nn
-import numpy as np
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from crystal.substrate import MemoryCrystal
+from .substrate import MemoryCrystal
 
 
 class PhaseDecoder(nn.Module):

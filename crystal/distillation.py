@@ -11,13 +11,7 @@ lossless for structured sequential facts and achieves compression ratios
 exceeding 100,000:1 for factual content.
 """
 
-import torch
-import numpy as np
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from crystal.substrate import MemoryCrystal
+from .substrate import MemoryCrystal
 
 
 class ContextDistiller:

@@ -6,21 +6,21 @@ Solves lossless discrete recall tasks that standard RNNs cannot solve at any sca
 
 ## The problem with standard RNNs
 
-Every RNN, LSTM, GRU, and most transformer variants store memory as floating point numbers multiplied by weight matrices each timestep. Multiply `1.0` by `0.95` a hundred times and you get `0.006`. The information is gone. This is why GRU cannot learn 16-bit parity — the contractive update rule destroys the early bits before the network sees the later ones. More parameters do not fix this. It is a structural property of the update rule, not a capacity problem.
+Every RNN, LSTM, GRU, and most transformer variants store memory as floating point numbers multiplied by weight matrices each timestep. Multiply `1.0` by `0.95` a hundred times and you get `0.006`. The information is gone. This is why GRU cannot learn 16-bit parity: the contractive update rule destroys the early bits before the network sees the later ones. More parameters do not fix this. It is a structural property of the update rule, not a capacity problem.
 
 ## What Helix does differently
 
 Helix stores memory as phase angles that accumulate over time instead of decaying.
 
-**Phase accumulation** — each neuron maintains a phase angle that shifts forward with each new input via `phi += sigmoid(gate) * pi`. Angles do not decay. A neuron that has seen 10,000 steps carries a different phase from one that has seen 10 steps, and both are recoverable.
+**Phase accumulation**: each neuron maintains a phase angle that shifts forward with each new input via `phi += sigmoid(gate) * pi`. Angles do not decay. A neuron that has seen 10,000 steps carries a different phase from one that has seen 10 steps, and both are recoverable.
 
-**Quantization sieve** — after each update the phase is softly snapped to a `pi/4` grid. This forces neurons into eight discrete stable states instead of drifting through continuous space, giving the cell structural stability on discrete inputs.
+**Quantization sieve**: after each update the phase is softly snapped to a `pi/4` grid. This forces neurons into eight discrete stable states instead of drifting through continuous space, giving the cell structural stability on discrete inputs.
 
-**Multi-harmonic readout** — instead of reading the raw angle, Helix extracts features at multiple frequencies: `cos(phi)`, `sin(phi)`, `cos(2*phi)`, `sin(2*phi)`, `cos(4*phi)`, `sin(4*phi)`, `cos(8*phi)`, `sin(8*phi)`. One angle produces a rich eight-dimensional feature.
+**Multi-harmonic readout**: instead of reading the raw angle, Helix extracts features at multiple frequencies: `cos(phi)`, `sin(phi)`, `cos(2*phi)`, `sin(2*phi)`, `cos(4*phi)`, `sin(4*phi)`, `cos(8*phi)`, `sin(8*phi)`. One angle produces a rich eight-dimensional feature.
 
-**Winding number** — with `full_state=True`, the phase is not wrapped modulo `2*pi`. A neuron that has rotated 47 times carries different information from one that rotated 3 times, even if both currently point at the same angle.
+**Winding number**: with `full_state=True`, the phase is not wrapped modulo `2*pi`. A neuron that has rotated 47 times carries different information from one that rotated 3 times, even if both currently point at the same angle.
 
-**Binary alignment** — a special mode where `phi = 0.5*phi + bit*pi`. This maps a bit stream into the phase via recursive half-shifts. Decoding reverses this with Bernoulli unwinding. For discrete bit inputs this gives exact encode/decode with no information loss.
+**Binary alignment**: a special mode where `phi = 0.5*phi + bit*pi`. This maps a bit stream into the phase via recursive half-shifts. Decoding reverses this with Bernoulli unwinding. For discrete bit inputs this gives exact encode/decode with no information loss.
 
 ## Benchmarks
 
@@ -32,7 +32,7 @@ Helix stores memory as phase angles that accumulate over time instead of decayin
 
 Helix hits 100% by epoch 100 and stays there. GRU oscillates near 50% (coin flip) for all 400 epochs. GRU cannot learn this task in standard training because its contractive update destroys early bits before the network sees the later ones. Helix solves it with one neuron because phase accumulation does not lose anything on discrete inputs.
 
-### Crystalline loop — bit-perfect ASCII encode/decode
+### Crystalline loop: bit-perfect ASCII encode/decode
 
 Encodes 8-bit ASCII characters into Helix phase angles using binary alignment mode, then decodes them back.
 
@@ -82,20 +82,20 @@ Built on top of the core cell: a full memory system for production use.
 
 | module | what it does |
 |--------|-------------|
-| `crystal/substrate.py` | `MemoryCrystal` — portable `.hx` binary format, absorb/recall/export/load |
-| `crystal/temporal_index.py` | `TemporalPhaseIndex` — random access to any past timestep, phase cosine search |
-| `crystal/affective.py` | `AffectiveEncoder` — emotional state in dedicated low-frequency phase bands |
-| `crystal/resonance.py` | `ResonanceDetector` — detect when absorbed sequences settle into stable patterns |
-| `crystal/multimodal.py` | `MultiModalFusion` — text (768d) + image (512d) + audio (384d) into one crystal |
-| `crystal/synthesis.py` | `PhaseDecoder`, `PhasicRelay` — decode phase state back to embedding space |
-| `crystal/phicrypt.py` | `PhiCrypt` — key-derived phase rotation encryption, `.hxe` file format |
-| `crystal/phase_collapse.py` | `PhaseCollapseRegister` — permanent irreversible binary flags |
-| `crystal/spectrum_cache.py` | `SpectrumCache` — incremental harmonic recomputation, only updates changed neurons |
-| `crystal/distillation.py` | `ContextDistiller` — compression stats for long-sequence absorption |
-| `crystal/phase_diff.py` | `PhaseDiff`, `PhaseVersionTracker` — git-style diff and rollback for memory states |
-| `crystal/memory.py` | `HelixMemory` — unified orchestrator for the full suite |
+| `crystal/substrate.py` | `MemoryCrystal`: portable `.hx` binary format, absorb/recall/export/load |
+| `crystal/temporal_index.py` | `TemporalPhaseIndex`: random access to any past timestep, phase cosine search |
+| `crystal/affective.py` | `AffectiveEncoder`: emotional state in dedicated low-frequency phase bands |
+| `crystal/resonance.py` | `ResonanceDetector`: detect when absorbed sequences settle into stable patterns |
+| `crystal/multimodal.py` | `MultiModalFusion`: text (768d) + image (512d) + audio (384d) into one crystal |
+| `crystal/synthesis.py` | `PhaseDecoder`, `PhasicRelay`: decode phase state back to embedding space |
+| `crystal/phicrypt.py` | `PhiCrypt`: key-derived phase rotation encryption, `.hxe` file format |
+| `crystal/phase_collapse.py` | `PhaseCollapseRegister`: permanent irreversible binary flags |
+| `crystal/spectrum_cache.py` | `SpectrumCache`: incremental harmonic recomputation, only updates changed neurons |
+| `crystal/distillation.py` | `ContextDistiller`: compression stats for long-sequence absorption |
+| `crystal/phase_diff.py` | `PhaseDiff`, `PhaseVersionTracker`: git-style diff and rollback for memory states |
+| `crystal/memory.py` | `HelixMemory`: unified orchestrator for the full suite |
 
-### HelixMemory — one entry point for everything
+### HelixMemory: one entry point for everything
 
 Run from inside the `helix/` directory, or add it to your `sys.path` first.
 
@@ -125,7 +125,7 @@ mem.register_flag("churned", idx=0)
 mem.set_flag("churned")          # irreversible
 mem.get_flag("churned")          # True
 
-# save — writes encrypted .hxe if passphrase was set
+# save: writes encrypted .hxe if passphrase was set
 path = mem.save("user_123")
 
 # load on next session
@@ -139,11 +139,11 @@ similar  = mem2.search(query_phi, top_k=3) # find similar past moments
 
 `advanced_features.py` contains three training protocols.
 
-**CryostasisManager** — when a neuron's error drops below `2^-9`, it permanently zeros its gradient. The neuron is done learning and cannot be overwritten. Prevents catastrophic forgetting.
+**CryostasisManager**: when a neuron's error drops below `2^-9`, it permanently zeros its gradient. The neuron is done learning and cannot be overwritten. Prevents catastrophic forgetting.
 
-**DynamicBrakingLoss** — scales the loss gradient based on phase correlation. Fast exploration early, smooth stabilization at convergence.
+**DynamicBrakingLoss**: scales the loss gradient based on phase correlation. Fast exploration early, smooth stabilization at convergence.
 
-**MnemonicShieldLR** — context-aware learning rate that protects established memories during continued training.
+**MnemonicShieldLR**: context-aware learning rate that protects established memories during continued training.
 
 ## Usage
 
@@ -181,7 +181,7 @@ python benchmarks/color_algebra.py
 
 | file | what it does |
 |------|-------------|
-| `helix.py` | `HelixCell`, `HelixNeuronCell`, `HelixModel`, `HelixNeuronModel` — full architecture |
+| `helix.py` | `HelixCell`, `HelixNeuronCell`, `HelixModel`, `HelixNeuronModel`: full architecture |
 | `advanced_features.py` | `CryostasisManager`, `DynamicBrakingLoss`, `MnemonicShieldLR` |
 | `config.py` | per-task hyperparameter configs |
 | `benchmarks/` | reproducible benchmark scripts |
